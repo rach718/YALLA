@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<body class="img-fluid" style="background-image: url('{% static 'images/17.jpg' %}')">
+ <h1 class="welcome" style="margin-bottom: -20px">YALLA!</h1>
+<div class="container"><br><br>
+    <div class="card">
+  <div class="card-header about" style="font-size: 30px">HOW IT WORKS</div>
+  <div class="card-body" style="margin-top: -40px">
+<div class="hiw-text card-text" style="color: #007bff">
+    <h5>Not again!</h5>
+    <h5>Your group of friends or team at work can't decide on a plan for that party, travel adventure, or simple outing!</h5>
+    <h5>All that back and forth texting and emails are making you want to throw in the towel on your plan...</h5><br>
+    <h5>Well not so fast!</h5>
+    <h5>Our team at YALLA! came up with a simple solution!<h5>
+        <h5>Why not create a social planning app where you can decide on a plan based on popular vote!</h5><hr>
+        <h5>YALLA! is Middle Eastern slang for let's go! So YALLA! Let's get your event started!</h5><hr>
+    <h6 id="steps" style="font-size: 30px; color: #4CAF50;">THE STEPS ARE SIMPLE:</h6><hr>
+     <ol class="listing" style="list-style-position: inside; font-size: 20px;">
+            <li>CREATE AN EVENT (choose 2 potential dates and times, and 3 locations)</li>
+    <li>SEND INVITES</li>
+         <li>INVITEES VOTE ON THEIR TOP CHOICE</li>
+              <li>POPULAR VOTE WINS!</li>
+         <li>INVITEES OFFICIALLY RSVP</li>
+         <li>YAY! YOUR EVENT IS FINALIZED!</li>
+         <li>NOW HAVE SOME FUN! YOU CAN THANK US LATER:-)</li>
+        </ol><br>
+        {% if not request.user.is_authenticated and not request.user.profile %}
+        <a href="{% url 'signup' %}" class="btn btn-primary">SIGN UP NOW</a>
+        {% else %}
+        <a href="{% url 'create_event' %}" class="btn btn-primary">PLAN AN EVENT NOW</a>
+        {% endif %}
+</div>
+</div>
+    </div>
+</div>
+</body>
+{% endblock %}

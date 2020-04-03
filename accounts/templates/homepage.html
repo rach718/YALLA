@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+{% if not request.user.is_authenticated and not request.user.profile %}
+<body class="img-fluid" style="background-image: url('{% static 'images/1.jpg' %}')">
+    <h1 class="welcome">YALLA!</h1>
+<h3 class="home_login" style="margin-bottom: 50px">THE EASY WAY TO PLAN YOUR SOCIAL CALENDAR VIA OUR VOTING PLATFORM</h3>
+     <div class="btn-container" style="margin-top: -10px">
+<a href="{% url 'login' %}"><button id="login" class="btn btn-success bt1"><h4>LOGIN</h4></button></a>
+<a href="{% url 'signup'%}"><button id="signup" class="btn btn-success bt2"><h4>SIGN-UP</h4></button></a>
+     </div>
+    </body>
+{% else %}
+<body class="img-fluid" style="background-image: url('{% static 'images/2.jpg' %}');">
+<h1 class="welcome">YALLA!</h1>
+<h3 class="home_login" style="margin-bottom: 50px"> THE EASY WAY TO PLAN YOUR SOCIAL CALENDAR VIA OUR VOTING PLATFORM</h3>
+<h3 class="home_login">WELCOME {{ user.first_name | upper}}!</h3>
+    <div class="btn-container">
+<a href="{% url 'create_event' %}"><button class="btn btn-success btn1"><h5>PLAN AN EVENT</h5></button></a>
+<a href="{% url 'all_events' %}"><button class="btn btn-success btn2"><h5>MY EVENTS LIST</h5></button></a>
+{% endif %}
+
+</div>
+        </body>
+
+
+
+{% endblock %}
