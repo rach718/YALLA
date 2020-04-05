@@ -61,10 +61,11 @@ def login(request):
 
 
 
-
 def logout(request):
     dlogout(request)
     return redirect('home')
+
+
 
 @login_required()
 def create_profile(request):
@@ -100,6 +101,8 @@ def create_event(request):
             event = form.save(commit=False)
             event.profile = request.user.profile
             event.save()
+            invitee = EventInvitee(event=event, profile=request.user.profile)
+            invitee.save()
             for email in request.POST.get('emails').splitlines():
                 try:
                     validate_email(email)
@@ -131,12 +134,6 @@ def create_event(request):
         return render(request, 'create_event.html',{'form':form, 'location_forms':location_form_set, 'date_forms':date_form_set})
 
 
-def events_list(request):
-    votes = Vote.objects.filter(profile=request.user.profile)
-    voted_events = [vote.event for vote in votes]
-    print(voted_events)
-    return render(request,'events_list.html',{'voted_events':voted_events})
-
 
 def all_events(request):
     votes = Vote.objects.filter(profile=request.user.profile)
@@ -144,6 +141,14 @@ def all_events(request):
     events_list = request.user.profile.created_events.all() | request.user.profile.my_events.all()
     events_list = events_list.distinct()
     return render(request,'all_events.html',{'events_list':events_list,'voted_events':voted_events})
+
+
+class ProfileAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        qs = self.request.user.profile.friends.all()
+        if self.q:
+            qs = qs.filter(email__istartswith=self.q)
+        return qs
 
 
 def voting_booth(request, event_id):
@@ -168,13 +173,6 @@ def voting_booth(request, event_id):
     return render(request,'voting_booth.html',{'form':form, 'event':event})
 
 
-class ProfileAutocomplete(autocomplete.Select2QuerySetView):
-    def get_queryset(self):
-        qs = self.request.user.profile.friends.all()
-        if self.q:
-            qs = qs.filter(email__istartswith=self.q)
-        return qs
-
 
 def close_votes(request, event_id):
     event = Event.objects.get(id=event_id)
@@ -184,13 +182,49 @@ def close_votes(request, event_id):
     return redirect('all_events')
 
 
+# def rsvp(request, event_id, going):
+#     event = Event.objects.get(id=event_id)
+#     print(going)
+#     if request.user.profile in event.invitees.all() or request.user.profile == event.profile:
+#         invitee = EventInvitee.objects.filter(event=event, profile=request.user.profile)
+#         print(invitee)
+#         if going == 1:
+#             invitee.status = 'I'
+#             invitee.save()
+#         elif going == 0:
+#             invitee.status = 'O'
+#             invitee.save()
+#     return redirect('view_event', event.id)
+
 def rsvp(request, event_id, going):
     event = Event.objects.get(id=event_id)
-    invitee = event.invitees.get(profile=request.user.profile)
+    invitee = EventInvitee.objects.get(event=event, profile=request.user.profile)
     if going == 1:
         invitee.status = 'I'
     elif going == 0:
         invitee.status = 'O'
     invitee.save()
-    return redirect('all_events')
+    return redirect('view_event', event.id)
 
+
+def view_event(request,event_id):
+    event = Event.objects.get(id=event_id)
+    invitees = EventInvitee.objects.filter(event=event)
+    location_vote = {}
+    date_vote = {}
+    winning_location_counter = 0
+    winning_date_counter= 0
+    for location in event.location_set.all():
+        location_vote.update({location: Vote.objects.filter(event=event, location=location).count()})
+    for date in event.date_options.all():
+        date_vote.update({date: Vote.objects.filter(event=event, date=date).count()})
+    for date,votes in date_vote.items():
+        if votes >= winning_date_counter:
+            winning_date = date
+            winning_date_counter = votes
+    for location, votes in location_vote.items():
+        if votes >= winning_location_counter:
+            winning_location = location
+            winning_location_counter = votes
+    return render(request,'view_event.html',{'event':event,'invitees':invitees,'location_vote':location_vote,
+                                             'date_vote':date_vote, 'location':winning_location, 'date':winning_date})

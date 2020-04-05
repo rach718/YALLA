@@ -46,6 +46,7 @@ class DateForm(forms.ModelForm):
         fields = ['date']
 
 
+
 class LocationForm(forms.ModelForm):
     class Meta:
         model = Location

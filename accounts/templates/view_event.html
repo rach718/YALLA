@@ -2,10 +2,94 @@
 {% load crispy_forms_tags %}
 {% load static %}
 {% block content %}
+<br>
 
+<h1 style="text-align:center; color: #4CAF50; font-size:45px"> MY EVENT DETAILS</h1>
+<h5 class="card-header" style="text-align:center; color: #007bff">View finalized event details, who else is attending, and the voting booth results!</h5><br>
+<div class="row">
+        <div class="card col-6 m-3">
+    <div class="card-header" style="color: #4CAF50; font-size: 30px;font-weight:bold">{{event.title | upper}}</div>
+    {% if request.user.profile in event.invitees %}
+    <div class="card-header">
+        Invited by: {{event.profile | upper}}
+    </div>
+    {% endif %}
 
+  <div class="card-body">
+    <h6 class="card-subtitle mb-2">
+        <ul style="list-style-type:none; padding-left: 0">
+            <h5 style="font-weight:bold">DATES</h5>
+            <li>{{date.date}}</li>
+            </ul>
+    </h6><hr>
 
+       <h6 class="card-subtitle mb-2">
+        <ul style="list-style-type:none; padding-left: 0">
+            <h5 style="font-weight:bold">LOCATION</h5>
+            <li>{{location.location | upper}}</li>
+            </ul>
+       </h6><hr>
 
+      <h5 style="font-weight:bold">DESCRIPTION</h5>
+    <p class="card-text">{{ event.description | upper}}</p>
+     {% if event in voted_events and event.status == 'VO' %}<hr>
+      <h5 style="color: #007bff;font-weight: bold">VOTING IN PROGRESS</h5>
 
+    {% elif event not in voted_events and event.status == 'VO' %}
+      <hr>
+    <a href="{% url 'voting_booth' event.id %}" class="card-link btn btn-primary vote-btn-1">VOTE!</a>
+    <a href="{% url 'rsvp' event.id 0 %}" class="card-link btn btn-success vote-btn-2">COUNT ME OUT:(</a>
+    {% elif event.status == 'C' %}
+      <h5 style="color: red; font-weight: bold">EVENT CANCELLED</h5>
+      {% elif event.status == 'VC' %}
+      <hr>
+    <a href="{% url 'rsvp' event.id 1 %}" class="card-link btn btn-primary" style="width:150px">I'M IN!</a>
+    <a href="{% url 'rsvp' event.id 0 %}" class="card-link btn btn-success">COUNT ME OUT:(</a>
+      {% endif %}
 
+      <hr>
+      {% if request.user.profile == event.profile and event.status == 'VO' %}
+                <a href="#" class="btn btn-warning">CLOSE VOTES</a>
+            {% endif %}
+           {% if request.user.profile == event.profile %}
+                <a href="#" class="btn btn-danger">CANCEL EVENT</a>
+      {% endif %}
+
+</div>
+  </div>
+
+<div class="card col-4 ml-3" style="margin-top: 15px">
+<ul class="list-group">
+    <h3 class="card-header" style="text-align:center; color: #4CAF50; font-size:30px; font-weight:bold">INVITEES | RSVP</h3>
+        {% for invitee in invitees %}
+    <li class="list-group-item">{{ invitee.profile.email}} <br> RSVP: {{invitee.get_status_display}}</li>
+    {% endfor  %}
+</ul>
+
+</div>
+
+</div><br>
+<div class="row">
+    <div class="card col-6 ml-3">
+        <div class="card-header" style="color: #007bff; font-size: 30px;font-weight:bold">VOTING BOOTH RESULTS!</div>
+        <div class="card-body">
+    <div class="card-subtitle mb-2">
+                <ul style="list-style-type:none; padding-left: 0">
+            <h5 style="font-weight:bold">DATES & TIMES</h5>
+        {% for date, votes in date_vote.items %}
+                    <li><b>OPTION:</b> {{date.date}} &nbsp <b>TOTAL VOTES</b> = {{votes}}</li>
+        {% endfor %}
+            </ul>
+        <ul style="list-style-type:none; padding-left: 0"><hr>
+            <h5 style="font-weight:bold">LOCATION</h5>
+        {% for location, votes in location_vote.items %}
+            <li><b>OPTION:</b> {{location.location | upper}} &nbsp  <b>TOTAL VOTES</b> = {{votes}}</li>
+        {% endfor %}
+            </ul>
+    </div>
+</div>
+</div>
+</div><br><br>
+    <a href="{% url 'all_events' %}" class="card-link btn btn-primary vote-btn-1" style="margin:auto; height:50px; padding-top:10px;">MY EVENTS LIST</a>
+<br><br>
 {% endblock %}

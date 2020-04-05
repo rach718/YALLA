@@ -1,15 +1,22 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
-<div>
-<h2>Voting Booth For Event: {{ event.title }}</h2>
-</div>
+<br>
+<h2 style="text-align:center; color: #4CAF50">WELCOME TO THE VOTING BOOTH FOR: {{ event.title | upper}}</h2><br>
 <div class="container">
+    <div class="card border-primary col-12 mb-3">
+        <div class="card-header text-primary" style="font-weight:bold;">PLEASE VOTE ON YOUR PREFERRED DATE & TIME AND LOCATION</div><br>
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form | crispy }}
+    {{ form | crispy}}
     <button type="submit" class="btn btn-primary">VOTE!</button>
+    <br><br>
 </form>
+ </div>
+    <br>
+    <p>* RESULTS WILL BE REVEALED WHEN THE HOST CLOSES THE VOTING BOOTH. ONCE CLOSED, YOU CAN SEE THE FINALIZED DETAILS
+    AND VOTE RESULTS BY CLICKING ON THE "VIEW DETAILS" TAB ON YOUR INVITATION IN "MY EVENTS" </p>
+    <br>
     </div>
-
 {% endblock %}
+

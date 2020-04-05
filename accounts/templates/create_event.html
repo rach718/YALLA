@@ -3,8 +3,8 @@
 {% load static %}
 {% block content %}
 <div id="create_event"><br>
-<h2 style="margin-left: 20px; color: #4CAF50; text-align:center">PLAN YOUR EVENT</h2>
-    <h4 style="margin-left: 20px; color: #007bff; text-align:center">YALLA! Let's get started!</h4>
+<h1 style="margin-left: 20px; color: #4CAF50; text-align:center">PLAN YOUR EVENT</h1>
+    <h3 style="margin-left: 20px; color: #007bff; text-align:center">YALLA! Let's get started!</h3>
 </div>
 <div class="container">
 <form method="post" enctype="multipart/form-data">
@@ -33,13 +33,14 @@
 </form>
 
     </div>
-
+<br><br>
 {% for form in date_forms %}
 <script>
   $(function () {
     $("#id_form-{{ forloop.counter0 }}-date").datetimepicker({
       format: 'd/m/Y H:i',
     });
+
   })
 </script>
 {% endfor %}
